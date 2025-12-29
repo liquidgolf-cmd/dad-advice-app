@@ -107,11 +107,29 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Claude API error:', error);
-    console.error('Error stack:', error.stack);
-    res.status(500).json({ 
+    console.error('Error message:', error.message);
+    console.error('Error name:', error.name);
+    console.error('Error status:', error.status);
+    console.error('Error statusCode:', error.statusCode);
+    
+    // Anthropic SDK errors have different structure
+    let errorDetails = error.message || 'Unknown error';
+    let statusCode = 500;
+    
+    if (error.status) {
+      statusCode = error.status;
+    } else if (error.statusCode) {
+      statusCode = error.statusCode;
+    }
+    
+    // If it's a 404, the model might be wrong
+    if (statusCode === 404) {
+      errorDetails = 'Model not found. Please check the model name.';
+    }
+    
+    res.status(statusCode < 500 ? statusCode : 500).json({ 
       error: 'Failed to get response from Dad',
-      details: error.message || 'Unknown error',
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      details: errorDetails,
     });
   }
 }
