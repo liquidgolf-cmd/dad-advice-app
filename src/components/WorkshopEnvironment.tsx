@@ -6,11 +6,15 @@ import { sendMessageToDad } from '../services/claudeService';
 import { getCachedAudio } from '../services/ttsService';
 import { searchYouTubeVideos, type YouTubeVideo } from '../services/videoService';
 import { storageService } from '../services/storageService';
+import { handleAPIError, isRetryableError } from '../utils/errorHandler';
+import { retry } from '../utils/retry';
 import DadAvatar from './DadAvatar';
 import SpeechBubble from './SpeechBubble';
 import MediaCapture from './MediaCapture';
 import VideoSuggestion from './VideoSuggestion';
 import ProfessionalReferral from './ProfessionalReferral';
+import ErrorMessage from './ErrorMessage';
+import LoadingSkeleton from './LoadingSkeleton';
 
 interface WorkshopEnvironmentProps {
   topic: Topic;
@@ -25,9 +29,17 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
   const [currentMediaUrl, setCurrentMediaUrl] = useState<string | null>(null);
   const [videoSuggestions, setVideoSuggestions] = useState<YouTubeVideo[]>([]);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [error, setError] = useState<{ message: string; retryable: boolean } | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const topicConfig = TOPICS.find((t) => t.id === topic)!;
+  
+  // Clear error when starting new message
+  useEffect(() => {
+    if (inputText || currentMediaUrl) {
+      setError(null);
+    }
+  }, [inputText, currentMediaUrl]);
 
   useEffect(() => {
     // Load existing session or create greeting
@@ -81,17 +93,22 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
     if (!inputText.trim() && !currentMediaUrl) return;
 
     setIsLoading(true);
+    setError(null);
     setDadMood('listening');
     setVideoSuggestions([]);
+
+    // Store values before clearing state
+    const messageText = inputText;
+    const mediaUrl = currentMediaUrl;
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputText || '(sent a photo)',
+      content: messageText || '(sent a photo)',
       timestamp: Date.now(),
-      mediaUrl: currentMediaUrl || undefined,
-      mediaType: currentMediaUrl ? 'image' : undefined,
+      mediaUrl: mediaUrl || undefined,
+      mediaType: mediaUrl ? 'image' : undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -101,31 +118,41 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
     try {
       setDadMood('thinking');
 
-      // Get response from Dad
-      const response = await sendMessageToDad(
-        [...messages, userMessage],
-        topic,
-        currentMediaUrl || undefined
+      // Get response from Dad with retry
+      const response = await retry(
+        () => sendMessageToDad(
+          [...messages, userMessage],
+          topic,
+          mediaUrl || undefined
+        ),
+        {
+          maxAttempts: 3,
+          delay: 1000,
+          backoff: 'exponential',
+          onRetry: (attempt: number) => {
+            console.log(`Retrying API call (attempt ${attempt})`);
+          },
+        }
       );
-
       setDadMood(response.mood || 'explaining');
 
-      // Generate audio
+      // Generate audio (optional, don't fail if this errors)
       let audioUrl: string | undefined;
       try {
         audioUrl = await getCachedAudio(response.audioText);
       } catch (error) {
-        console.log('TTS not available (expected in local dev)');
-        // Audio is optional
+        console.log('TTS not available:', error);
+        // Audio is optional, continue without it
       }
 
-      // Search for videos if suggested
+      // Search for videos if suggested (optional, don't fail if this errors)
       if (response.videoSuggestion) {
         try {
           const videos = await searchYouTubeVideos(response.videoSuggestion);
           setVideoSuggestions(videos);
         } catch (error) {
           console.error('Video search failed:', error);
+          // Video suggestions are optional
         }
       }
 
@@ -144,20 +171,29 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
     } catch (error) {
       console.error('Failed to get response:', error);
       
+      const appError = handleAPIError(error);
+      setError({
+        message: appError.message,
+        retryable: isRetryableError(error),
+      });
+      
+      setDadMood('concerned');
+      
+      // Also add a friendly error message to the chat
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'dad',
-        content: "Oops! Dad's having some technical difficulties. Can you try that again? *adjusts glasses* Technology, am I right?",
+        content: `${appError.message} *adjusts glasses* Want to try again?`,
         timestamp: Date.now(),
       };
       
       setMessages((prev) => [...prev, errorMessage]);
-      setDadMood('silly');
     } finally {
       setIsLoading(false);
       setTimeout(() => setDadMood('idle'), 2000);
     }
   };
+
 
   const handleMediaCaptured = (dataUrl: string, type: 'image' | 'video') => {
     setCurrentMediaUrl(dataUrl);
@@ -270,13 +306,17 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
           {isLoading && (
             <div className="flex flex-col items-start">
               <DadAvatar mood={dadMood} position={topicConfig.dadPosition} />
-              <div className="speech-bubble animate-pulse">
-                <div className="flex gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-              </div>
+              <LoadingSkeleton type="bubble" />
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col items-start">
+              <ErrorMessage
+                message={error.message}
+                retryable={false}
+                className="max-w-xl"
+              />
             </div>
           )}
 
