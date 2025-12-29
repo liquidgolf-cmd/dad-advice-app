@@ -8,6 +8,54 @@ interface SpeechBubbleProps {
   onAudioEnd?: () => void;
 }
 
+interface MessagePart {
+  type: 'text' | 'action';
+  content: string;
+}
+
+// Parse message and identify action markers
+const parseMessage = (text: string): MessagePart[] => {
+  const parts: MessagePart[] = [];
+  // Match action markers: *text*, _text_, or [text]
+  const actionRegex = /(\*[^*]+\*|_[^_]+_|\[[^\]]+\])/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = actionRegex.exec(text)) !== null) {
+    // Add text before action marker
+    if (match.index > lastIndex) {
+      const textContent = text.slice(lastIndex, match.index);
+      if (textContent) {
+        parts.push({ type: 'text', content: textContent });
+      }
+    }
+    
+    // Add action marker (remove the delimiters for display)
+    const actionText = match[0]
+      .replace(/^\*|\*$/g, '') // Remove asterisks
+      .replace(/^_|_$/g, '')   // Remove underscores
+      .replace(/^\[|\]$/g, ''); // Remove brackets
+    
+    parts.push({ type: 'action', content: actionText });
+    lastIndex = match.index + match[0].length;
+  }
+  
+  // Add remaining text
+  if (lastIndex < text.length) {
+    const remainingText = text.slice(lastIndex);
+    if (remainingText) {
+      parts.push({ type: 'text', content: remainingText });
+    }
+  }
+  
+  // If no action markers found, return whole message as text
+  if (parts.length === 0) {
+    parts.push({ type: 'text', content: text });
+  }
+  
+  return parts;
+};
+
 const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   message,
   audioUrl,
@@ -18,6 +66,8 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasPlayed, setHasPlayed] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const messageParts = parseMessage(message);
 
   useEffect(() => {
     if (audioUrl && autoPlay && !hasPlayed) {
@@ -48,7 +98,20 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   return (
     <div className="speech-bubble animate-slide-up max-w-xl">
       <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-        {message}
+        {messageParts.map((part, index) => {
+          if (part.type === 'action') {
+            return (
+              <span
+                key={index}
+                className="italic text-gray-500 text-sm"
+                title="Action"
+              >
+                {part.content}
+              </span>
+            );
+          }
+          return <span key={index}>{part.content}</span>;
+        })}
       </div>
 
       {audioUrl && (
