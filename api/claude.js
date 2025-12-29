@@ -1,4 +1,4 @@
-const Anthropic = require('@anthropic-ai/sdk').default;
+const Anthropic = require('@anthropic-ai/sdk');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
     });
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
       system: req.body.systemPrompt,
       messages: conversationMessages,
@@ -98,9 +98,11 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error('Claude API error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to get response from Dad',
-      details: error.message,
+      details: error.message || 'Unknown error',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 };
