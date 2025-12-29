@@ -91,6 +91,7 @@ export default async function handler(req, res) {
     console.error('TTS API error:', error);
     console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
+    console.error('API key exists:', !!process.env.GOOGLE_CLOUD_TTS_API_KEY);
     res.status(500).json({ 
       error: 'Failed to generate speech',
       details: error.message || 'Unknown error',
