@@ -18,7 +18,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onHomeClick, showHomeButton = tru
             transition-opacity hover:opacity-80
           "
         >
-          <span className="text-3xl">👨‍🔧</span>
+          <img 
+            src="/logo.png" 
+            alt="Dad Advice Logo" 
+            className="h-10 w-auto"
+          />
           <span className="text-2xl font-display font-bold text-dad-wood-dark">
             Dad Advice
           </span>

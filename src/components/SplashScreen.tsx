@@ -10,11 +10,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
       <div className="text-center max-w-2xl animate-slide-up">
         {/* App Logo/Title */}
         <div className="mb-8">
-          <h1 className="text-6xl md:text-7xl font-display font-bold text-dad-wood-dark mb-4">
-            Dad Advice
-          </h1>
-          <div className="text-7xl md:text-8xl mb-6">
-            👨‍🔧
+          <div className="flex flex-col items-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Dad Advice Logo" 
+              className="h-32 md:h-40 w-auto mb-4 animate-fade-in"
+            />
+            <h1 className="text-6xl md:text-7xl font-display font-bold text-dad-wood-dark">
+              Dad Advice
+            </h1>
           </div>
         </div>
 
