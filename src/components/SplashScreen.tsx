@@ -13,11 +13,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
           <div className="flex flex-col items-center mb-6">
             <img 
               src="/logo.png" 
-              alt="Dad Advice Logo" 
+              alt="Advice from Dad when dad isn't available Logo" 
               className="h-32 md:h-40 w-auto mb-4 animate-fade-in"
             />
-            <h1 className="text-6xl md:text-7xl font-display font-bold text-dad-wood-dark">
-              Dad Advice
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-dad-wood-dark leading-tight">
+              Advice from Dad when dad isn't available
             </h1>
           </div>
         </div>

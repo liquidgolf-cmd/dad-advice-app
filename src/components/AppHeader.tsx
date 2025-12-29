@@ -20,11 +20,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onHomeClick, showHomeButton = tru
         >
           <img 
             src="/logo.png" 
-            alt="Dad Advice Logo" 
+            alt="Advice from Dad when dad isn't available Logo" 
             className="h-10 w-auto"
           />
-          <span className="text-2xl font-display font-bold text-dad-wood-dark">
-            Dad Advice
+          <span className="text-lg md:text-xl font-display font-bold text-dad-wood-dark">
+            Advice from Dad when dad isn't available
           </span>
         </button>
 
