@@ -25,9 +25,12 @@ export default async function handler(req, res) {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    // Use a model that is broadly available; allow override via env
+    // Choose a broadly available model. Allow override via env.
+    // Priority: ANTHROPIC_MODEL env -> claude-3-5-sonnet-20241022 -> claude-3-haiku-20240307
     const modelName =
-      process.env.ANTHROPIC_MODEL || 'claude-3-opus-20240229';
+      process.env.ANTHROPIC_MODEL ||
+      'claude-3-5-sonnet-20241022' ||
+      'claude-3-haiku-20240307';
 
     // Build content array
     const content = [];
@@ -136,7 +139,7 @@ export default async function handler(req, res) {
     
     // If it's a 404, the model might be wrong
     if (statusCode === 404) {
-      errorDetails = 'Model not found. Trying a simpler model name may help.';
+      errorDetails = 'Model not found. Try setting ANTHROPIC_MODEL env to a model your account can access, e.g. claude-3-5-sonnet-20241022 or claude-3-haiku-20240307.';
     }
     
     res.status(statusCode < 500 ? statusCode : 500).json({ 
