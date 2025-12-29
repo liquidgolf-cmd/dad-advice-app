@@ -8,6 +8,7 @@ import { searchYouTubeVideos, type YouTubeVideo } from '../services/videoService
 import { storageService } from '../services/storageService';
 import { handleAPIError, isRetryableError } from '../utils/errorHandler';
 import { retry } from '../utils/retry';
+import { useSwipeGesture } from '../utils/swipeGestures';
 import DadAvatar from './DadAvatar';
 import SpeechBubble from './SpeechBubble';
 import MediaCapture from './MediaCapture';
@@ -32,7 +33,16 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
   const [error, setError] = useState<{ message: string; retryable: boolean } | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const topicConfig = TOPICS.find((t) => t.id === topic)!;
+
+  // Swipe gesture for going back (swipe right)
+  const swipeHandlers = useSwipeGesture({
+    onSwipeRight: () => {
+      onChangeTopic();
+    },
+    threshold: 100, // Require 100px swipe
+  });
   
   // Clear error when starting new message
   useEffect(() => {
@@ -228,9 +238,13 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
             onClick={onChangeTopic}
             className="
               px-4 py-2
+              min-h-[44px]
+              min-w-[80px]
               bg-dad-wood-light text-dad-wood-dark
               rounded-full
               hover:bg-dad-warm
+              active:bg-dad-warm
+              touch-manipulation
               transition-colors
               text-sm font-medium
               focus:outline-none focus:ring-2 focus:ring-white
@@ -264,7 +278,11 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div 
+        className="flex-1 overflow-y-auto px-4 py-6"
+        ref={messagesContainerRef}
+        {...swipeHandlers}
+      >
         <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((message) => (
             <div key={message.id}>
@@ -324,8 +342,8 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
         </div>
       </div>
 
-      {/* Input Area */}
-      <div className="bg-white border-t border-gray-200 px-4 py-4 shadow-lg">
+      {/* Input Area - Fixed at bottom on mobile */}
+      <div className="bg-white border-t border-gray-200 px-4 py-4 shadow-lg safe-area-bottom">
         <div className="max-w-4xl mx-auto">
           {currentMediaUrl && (
             <div className="mb-3 relative inline-block">
@@ -338,12 +356,15 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
                 onClick={() => setCurrentMediaUrl(null)}
                 className="
                   absolute -top-2 -right-2
-                  w-6 h-6 rounded-full
+                  w-8 h-8 rounded-full
                   bg-red-500 text-white
                   flex items-center justify-center
-                  text-xs
-                  hover:bg-red-600
+                  text-sm font-bold
+                  hover:bg-red-600 active:bg-red-700
+                  shadow-md
+                  touch-manipulation
                 "
+                aria-label="Remove image"
               >
                 ✕
               </button>
@@ -361,18 +382,22 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask Dad anything..."
+                placeholder={isLoading ? 'Dad is thinking...' : 'Ask Dad anything...'}
                 disabled={isLoading}
                 rows={1}
                 className="
                   w-full px-4 py-3
+                  min-h-[44px]
                   border-2 border-gray-300
                   rounded-2xl
                   focus:outline-none focus:border-dad-blue
                   disabled:bg-gray-100 disabled:cursor-not-allowed
                   resize-none
                   font-sans
+                  text-base
+                  leading-relaxed
                 "
+                style={{ fontSize: '16px' }} // Prevent zoom on iOS
               />
             </div>
 
@@ -381,14 +406,20 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
               disabled={isLoading || (!inputText.trim() && !currentMediaUrl)}
               className="
                 px-6 py-3
+                min-h-[44px]
+                min-w-[80px]
                 bg-dad-blue text-white
                 rounded-full
                 hover:bg-dad-blue-dark
+                active:bg-dad-blue-dark
                 disabled:bg-gray-300 disabled:cursor-not-allowed
                 transition-colors
                 font-medium
                 shadow-md hover:shadow-lg
+                touch-manipulation
+                flex items-center justify-center
               "
+              aria-label="Send message"
             >
               {isLoading ? '...' : 'Send'}
             </button>

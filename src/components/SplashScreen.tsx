@@ -38,22 +38,25 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         </div>
 
         {/* Enter Button */}
-        <button
-          onClick={onEnter}
-          className="
-            px-12 py-4
-            bg-dad-blue text-white
-            text-xl font-display font-bold
-            rounded-full
-            shadow-xl
-            hover:bg-dad-blue-dark
-            hover:shadow-2xl
-            hover:scale-105
-            transition-all duration-300
-            focus:outline-none focus:ring-4 focus:ring-dad-blue
-            animate-pulse-gentle
-          "
-        >
+            <button
+              onClick={onEnter}
+              className="
+                px-12 py-4
+                min-h-[56px]
+                bg-dad-blue text-white
+                text-xl font-display font-bold
+                rounded-full
+                shadow-xl
+                hover:bg-dad-blue-dark
+                hover:shadow-2xl
+                hover:scale-105
+                active:scale-[0.98]
+                transition-all duration-300
+                focus:outline-none focus:ring-4 focus:ring-dad-blue
+                animate-pulse-gentle
+                touch-manipulation
+              "
+            >
           Enter the Workshop
         </button>
 

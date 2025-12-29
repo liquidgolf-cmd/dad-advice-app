@@ -29,22 +29,26 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onHomeClick, showHomeButton = tru
         </button>
 
         {/* Home Button (optional, shown when not on home) */}
-        {showHomeButton && (
-          <button
-            onClick={onHomeClick}
-            className="
-              px-4 py-2
-              text-dad-blue
-              font-medium
-              rounded-lg
-              hover:bg-dad-blue-light
-              transition-colors
-              focus:outline-none focus:ring-2 focus:ring-dad-blue
-            "
-          >
-            Home
-          </button>
-        )}
+            {showHomeButton && (
+              <button
+                onClick={onHomeClick}
+                className="
+                  px-4 py-2
+                  min-h-[44px]
+                  min-w-[80px]
+                  text-dad-blue
+                  font-medium
+                  rounded-lg
+                  hover:bg-dad-blue-light
+                  active:bg-dad-blue-light
+                  transition-colors
+                  focus:outline-none focus:ring-2 focus:ring-dad-blue
+                  touch-manipulation
+                "
+              >
+                Home
+              </button>
+            )}
       </div>
     </header>
   );

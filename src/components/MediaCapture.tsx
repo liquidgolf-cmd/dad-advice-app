@@ -61,13 +61,17 @@ const MediaCapture: React.FC<MediaCaptureProps> = ({ onMediaCaptured, disabled }
         onClick={triggerFileSelect}
         disabled={disabled || isProcessing}
         className="
-          p-3 rounded-full
+          p-4 rounded-full
           bg-dad-green text-white
           hover:bg-dad-green-dark
+          active:bg-dad-green-dark
           disabled:bg-gray-300 disabled:cursor-not-allowed
           transition-colors
           shadow-md hover:shadow-lg
           focus:outline-none focus:ring-2 focus:ring-dad-green
+          min-h-[56px] min-w-[56px]
+          flex items-center justify-center
+          touch-manipulation
         "
         title="Take a photo or video"
         aria-label="Capture photo or video"

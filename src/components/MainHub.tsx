@@ -67,13 +67,16 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
               onClick={() => setShowRecentMenu(!showRecentMenu)}
               className="
                 px-6 py-3
+                min-h-[44px]
                 bg-white text-dad-wood-dark
                 rounded-full shadow-md
                 hover:shadow-lg hover:scale-105
+                active:scale-[0.98]
                 transition-all duration-300
                 focus:outline-none focus:ring-4 focus:ring-dad-blue
                 flex items-center gap-2
                 font-medium
+                touch-manipulation
               "
             >
               <span>📋</span>
@@ -100,12 +103,15 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
                     }}
                     className="
                       w-full
+                      min-h-[60px]
                       bg-gray-50 rounded-xl
                       p-4 text-left
                       hover:bg-dad-blue-light hover:shadow-md
+                      active:bg-dad-blue-light active:scale-[0.98]
                       transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-dad-blue
                       flex items-center gap-4
+                      touch-manipulation
                     "
                   >
                     <div className="text-3xl">
@@ -148,7 +154,9 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
                 p-8 text-left
                 transition-all duration-300 ease-out
                 hover:shadow-2xl hover:scale-105
+                active:scale-[0.98]
                 focus:outline-none focus:ring-4 focus:ring-dad-blue
+                touch-manipulation
                 ${hoveredTopic === topic.id ? 'transform scale-105' : ''}
               `}
             >

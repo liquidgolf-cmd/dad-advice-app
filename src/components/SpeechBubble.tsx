@@ -121,11 +121,14 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
             className="
               flex items-center gap-2
               px-4 py-2
+              min-h-[44px]
               bg-dad-blue text-white
               rounded-full
               hover:bg-dad-blue-dark
+              active:bg-dad-blue-dark
               transition-colors
               focus:outline-none focus:ring-2 focus:ring-dad-blue
+              touch-manipulation
             "
             aria-label={isPlaying ? 'Pause' : 'Play audio'}
           >
