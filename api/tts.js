@@ -27,13 +27,13 @@ export default async function handler(req, res) {
         input: { text },
         voice: {
           languageCode: 'en-US',
-          name: 'en-US-Wavenet-D', // More natural, conversational voice
+          name: 'en-US-Studio-M', // Studio voices are newest, most natural for conversations
           ssmlGender: 'MALE',
         },
         audioConfig: {
           audioEncoding: 'MP3',
-          pitch: 0.5, // Slightly higher pitch for warmth
-          speakingRate: 1.05, // Slightly faster for natural flow
+          pitch: 0, // Natural pitch
+          speakingRate: 1.0, // Natural speaking rate
         },
       }),
     });
