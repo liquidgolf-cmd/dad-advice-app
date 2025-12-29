@@ -44,6 +44,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Google TTS API error response:', response.status, errorText);
       throw new Error(`Google TTS API error: ${response.status} ${errorText}`);
     }
 
