@@ -1,5 +1,5 @@
 import React from 'react';
-import { Topic } from '../types';
+import type { Topic } from '../types';
 import { TOPICS } from '../utils/constants';
 
 interface TopicSelectorProps {

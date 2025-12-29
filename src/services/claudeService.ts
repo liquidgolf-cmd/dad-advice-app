@@ -1,4 +1,4 @@
-import { DadResponse, Message, Topic } from '../types';
+import type { DadResponse, Message, Topic } from '../types';
 import { DAD_SYSTEM_PROMPT } from '../utils/dadPersonality';
 
 export async function sendMessageToDad(

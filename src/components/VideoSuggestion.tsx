@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { YouTubeVideo } from '../services/videoService';
+import type { YouTubeVideo } from '../services/videoService';
 
 interface VideoSuggestionProps {
   videos: YouTubeVideo[];

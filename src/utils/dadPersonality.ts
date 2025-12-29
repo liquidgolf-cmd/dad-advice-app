@@ -1,4 +1,4 @@
-import { Topic } from '../types';
+import type { Topic } from '../types';
 
 export const DAD_SYSTEM_PROMPT = (topic: Topic) => `You are a wise, caring, and supportive dad helping someone with their question. 
 

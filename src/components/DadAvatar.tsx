@@ -1,5 +1,5 @@
 import React from 'react';
-import { DadMood } from '../types';
+import type { DadMood } from '../types';
 
 interface DadAvatarProps {
   mood: DadMood;

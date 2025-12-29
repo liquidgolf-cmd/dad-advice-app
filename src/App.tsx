@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Topic } from './types';
+import type { Topic } from './types';
 import TopicSelector from './components/TopicSelector';
 import WorkshopEnvironment from './components/WorkshopEnvironment';
 

@@ -1,4 +1,4 @@
-import { TopicConfig } from '../types';
+import type { TopicConfig, Topic } from '../types';
 
 export const TOPICS: TopicConfig[] = [
   {
@@ -51,7 +51,7 @@ export const TOPICS: TopicConfig[] = [
   },
 ];
 
-export const TOPIC_SAFETY_CONTEXT: Record<string, string> = {
+export const TOPIC_SAFETY_CONTEXT: Record<Topic, string> = {
   'home-repairs': 'Remember: Turn off power at breaker for electrical work. When in doubt, call a pro.',
   'cars': 'Safety first: Use jack stands, never just a jack. Brakes and steering are pro territory.',
   'technology': 'Backup your data before making changes. Some repairs void warranties.',

@@ -1,7 +1,7 @@
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { ConversationSession, Message } from '../types';
+import { openDB, type IDBPDatabase } from 'idb';
+import type { ConversationSession, Message } from '../types';
 
-interface DadAdviceDB extends DBSchema {
+interface DadAdviceDB {
   sessions: {
     key: string;
     value: ConversationSession;
@@ -21,12 +21,12 @@ interface DadAdviceDB extends DBSchema {
 const DB_NAME = 'dad-advice-db';
 const DB_VERSION = 1;
 
-let dbInstance: IDBPDatabase<DadAdviceDB> | null = null;
+let dbInstance: IDBPDatabase<any> | null = null;
 
-async function getDB(): Promise<IDBPDatabase<DadAdviceDB>> {
+async function getDB(): Promise<IDBPDatabase<any>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<DadAdviceDB>(DB_NAME, DB_VERSION, {
+  dbInstance = await openDB<any>(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // Create sessions store
       const sessionStore = db.createObjectStore('sessions', {

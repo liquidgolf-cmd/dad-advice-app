@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Topic, Message, DadMood } from '../types';
+import type { Topic, Message, DadMood } from '../types';
 import { TOPICS, TOPIC_SAFETY_CONTEXT } from '../utils/constants';
 import { DAD_GREETING } from '../utils/dadPersonality';
 import { sendMessageToDad } from '../services/claudeService';
 import { getCachedAudio } from '../services/ttsService';
-import { searchYouTubeVideos, YouTubeVideo } from '../services/videoService';
+import { searchYouTubeVideos, type YouTubeVideo } from '../services/videoService';
 import { storageService } from '../services/storageService';
 import DadAvatar from './DadAvatar';
 import SpeechBubble from './SpeechBubble';
@@ -66,12 +66,13 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       };
       setMessages([greeting]);
       
-      // Generate audio for greeting
+      // Generate audio for greeting (optional - fails gracefully)
       try {
         const audioUrl = await getCachedAudio(greeting.content);
         setMessages([{ ...greeting, audioUrl }]);
       } catch (error) {
-        console.error('Failed to generate greeting audio:', error);
+        console.log('TTS not available (expected in local dev)');
+        // Continue without audio - that's fine!
       }
     }
   };
@@ -114,7 +115,8 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       try {
         audioUrl = await getCachedAudio(response.audioText);
       } catch (error) {
-        console.error('TTS failed:', error);
+        console.log('TTS not available (expected in local dev)');
+        // Audio is optional
       }
 
       // Search for videos if suggested
