@@ -27,6 +27,3 @@ export async function searchYouTubeVideos(query: string): Promise<YouTubeVideo[]
   }
 }
 
-// Explicit type export
-export type { YouTubeVideo };
-

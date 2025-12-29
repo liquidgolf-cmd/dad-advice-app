@@ -57,6 +57,3 @@ export interface ConversationSession {
   lastActivity: number;
 }
 
-// Explicit type exports
-export type { Topic, TopicConfig, Message, DadResponse, DadMood, ConversationSession };
-
