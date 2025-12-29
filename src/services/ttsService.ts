@@ -16,10 +16,21 @@ function removeEmojis(text: string): string {
     .replace(/\s+/g, ' '); // Clean up extra spaces
 }
 
+// Remove punctuation that shouldn't be read aloud
+function removePunctuation(text: string): string {
+  return text
+    .replace(/[.,!?;:—–\-]/g, ' ') // Remove common punctuation
+    .replace(/["'`]/g, '') // Remove quotes
+    .replace(/[()[\]{}]/g, ' ') // Remove brackets
+    .replace(/\s+/g, ' ') // Clean up extra spaces
+    .trim();
+}
+
 export async function textToSpeech(text: string): Promise<string> {
   try {
-    // Remove emojis before sending to TTS
-    const cleanText = removeEmojis(text);
+    // Remove emojis and punctuation before sending to TTS
+    let cleanText = removeEmojis(text);
+    cleanText = removePunctuation(cleanText);
     
     const response = await fetch('/api/tts', {
       method: 'POST',

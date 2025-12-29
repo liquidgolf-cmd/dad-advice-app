@@ -27,13 +27,13 @@ export default async function handler(req, res) {
         input: { text },
         voice: {
           languageCode: 'en-US',
-          name: 'en-US-Neural2-D',
+          name: 'en-US-Wavenet-D', // More natural, conversational voice
           ssmlGender: 'MALE',
         },
         audioConfig: {
           audioEncoding: 'MP3',
-          pitch: 0,
-          speakingRate: 1.0,
+          pitch: 0.5, // Slightly higher pitch for warmth
+          speakingRate: 1.05, // Slightly faster for natural flow
         },
       }),
     });
