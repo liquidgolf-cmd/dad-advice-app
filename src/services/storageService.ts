@@ -48,6 +48,13 @@ export const storageService = {
     return sessions.sort((a, b) => b.lastActivity - a.lastActivity)[0];
   },
 
+  async getAllSessions(): Promise<ConversationSession[]> {
+    const db = await getDB();
+    const sessions = await db.getAll('sessions');
+    // Return sessions sorted by most recent activity first
+    return sessions.sort((a, b) => b.lastActivity - a.lastActivity);
+  },
+
   async clearOldSessions(maxAge: number = 24 * 60 * 60 * 1000): Promise<void> {
     const db = await getDB();
     const sessions = await db.getAll('sessions');

@@ -197,9 +197,10 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
               hover:bg-dad-warm
               transition-colors
               text-sm font-medium
+              focus:outline-none focus:ring-2 focus:ring-white
             "
           >
-            Change Topic
+            ← Back
           </button>
         </div>
       </div>
