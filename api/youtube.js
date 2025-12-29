@@ -1,4 +1,4 @@
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -31,7 +31,7 @@ export default async function handler(req: any, res: any) {
 
     const data = await response.json();
     
-    const videos = data.items?.map((item: any) => ({
+    const videos = data.items?.map((item) => ({
       id: item.id.videoId,
       title: item.snippet.title,
       thumbnail: item.snippet.thumbnails.medium.url,
@@ -39,7 +39,7 @@ export default async function handler(req: any, res: any) {
     })) || [];
 
     res.status(200).json({ videos });
-  } catch (error: any) {
+  } catch (error) {
     console.error('YouTube API error:', error);
     res.status(500).json({ 
       error: 'Failed to search videos',

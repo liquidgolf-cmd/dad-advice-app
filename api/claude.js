@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -17,7 +17,7 @@ export default async function handler(req: any, res: any) {
     });
 
     // Build content array
-    const content: any[] = [];
+    const content = [];
     
     // Add image if provided
     if (imageData) {
@@ -44,7 +44,7 @@ export default async function handler(req: any, res: any) {
     }
 
     // Build conversation history
-    const conversationMessages = messages.slice(0, -1).map((msg: any) => ({
+    const conversationMessages = messages.slice(0, -1).map((msg) => ({
       role: msg.role === 'dad' ? 'assistant' : 'user',
       content: msg.content,
     }));
@@ -62,7 +62,7 @@ export default async function handler(req: any, res: any) {
       messages: conversationMessages,
     });
 
-    const textContent = response.content.find((c: any) => c.type === 'text');
+    const textContent = response.content.find((c) => c.type === 'text');
     const messageText = textContent?.text || '';
 
     // Parse response indicators
@@ -96,7 +96,7 @@ export default async function handler(req: any, res: any) {
       videoSuggestion: videoMatch ? videoMatch[1].trim() : undefined,
       mood: moodMatch ? moodMatch[1].toLowerCase() : 'idle',
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Claude API error:', error);
     res.status(500).json({ 
       error: 'Failed to get response from Dad',

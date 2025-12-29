@@ -1,6 +1,6 @@
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -43,7 +43,7 @@ export default async function handler(req: any, res: any) {
     const audioUrl = `data:audio/mp3;base64,${audioBase64}`;
 
     res.status(200).json({ audioUrl });
-  } catch (error: any) {
+  } catch (error) {
     console.error('TTS API error:', error);
     res.status(500).json({ 
       error: 'Failed to generate speech',
