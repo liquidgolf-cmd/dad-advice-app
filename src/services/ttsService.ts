@@ -16,17 +16,124 @@ function removeEmojis(text: string): string {
     .replace(/\s+/g, ' '); // Clean up extra spaces
 }
 
-// Clean text and add SSML pauses for natural speech
-function prepareTextForTTS(text: string): string {
-  // Remove double quotes and backticks, but keep apostrophes in contractions
-  let cleaned = text
-    .replace(/["`]/g, '') // Remove double quotes and backticks only (keep apostrophes for contractions)
+// Common abbreviations and their spoken forms
+const ABBREVIATIONS: Record<string, string> = {
+  // Common tech/DIY abbreviations
+  'etc.': 'etcetera',
+  'vs.': 'versus',
+  'vs': 'versus',
+  'e.g.': 'for example',
+  'i.e.': 'that is',
+  'DIY': 'D I Y',
+  'LED': 'L E D',
+  'USB': 'U S B',
+  'HDMI': 'H D M I',
+  'WiFi': 'Wi Fi',
+  'wifi': 'Wi Fi',
+  'RAM': 'RAM',
+  'CPU': 'C P U',
+  'GPU': 'G P U',
+  'HTML': 'H T M L',
+  'CSS': 'C S S',
+  'API': 'A P I',
+  'URL': 'U R L',
+  'PDF': 'P D F',
+  'PSI': 'P S I',
+  'RPM': 'R P M',
+  'MPH': 'M P H',
+  'AC': 'A C',
+  'DC': 'D C',
+  'HVAC': 'H V A C',
+  'TV': 'T V',
+  'DVD': 'D V D',
+  'CD': 'C D',
+  // Common units
+  'lbs': 'pounds',
+  'oz': 'ounces',
+  'ft': 'feet',
+  'in': 'inches',
+  'mm': 'millimeters',
+  'cm': 'centimeters',
+  'kg': 'kilograms',
+};
+
+// Convert numbers to words for better pronunciation (0-20)
+const NUMBER_WORDS: string[] = [
+  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+  'seventeen', 'eighteen', 'nineteen', 'twenty'
+];
+
+// Convert number to word (for small numbers)
+function numberToWord(num: number): string {
+  if (num >= 0 && num <= 20) {
+    return NUMBER_WORDS[num];
+  }
+  return num.toString();
+}
+
+// Expand abbreviations in text
+function expandAbbreviations(text: string): string {
+  let expanded = text;
+  
+  // Replace abbreviations (using word boundaries to avoid partial matches)
+  for (const [abbr, expansion] of Object.entries(ABBREVIATIONS)) {
+    const regex = new RegExp(`\\b${abbr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    expanded = expanded.replace(regex, expansion);
+  }
+  
+  return expanded;
+}
+
+// Improve number pronunciation
+function improveNumbers(text: string): string {
+  // Convert standalone numbers 0-20 to words
+  return text.replace(/\b(\d{1,2})\b/g, (match, numStr) => {
+    const num = parseInt(numStr, 10);
+    if (num >= 0 && num <= 20) {
+      return numberToWord(num);
+    }
+    // For larger numbers, format them better (e.g., 1000 -> 1 thousand)
+    if (num >= 1000 && num < 1000000) {
+      const thousands = Math.floor(num / 1000);
+      const remainder = num % 1000;
+      if (remainder === 0) {
+        return `${numberToWord(thousands)} thousand`;
+      }
+    }
+    return match; // Keep original for complex numbers
+  });
+}
+
+// Handle special characters and symbols
+function cleanSpecialCharacters(text: string): string {
+  return text
+    .replace(/["`]/g, '') // Remove double quotes and backticks (keep apostrophes for contractions)
     .replace(/[()[\]{}]/g, ' ') // Remove brackets
     .replace(/…/g, '...') // Convert ellipsis to periods
+    .replace(/–|—/g, '-') // Convert em/en dashes to hyphens
+    .replace(/©|®|™/g, '') // Remove copyright symbols
+    .replace(/&/g, 'and') // Convert & to "and"
+    .replace(/@/g, 'at') // Convert @ to "at"
+    .replace(/#/g, 'number') // Convert # to "number"
+    .replace(/\$/g, 'dollars') // Convert $ to "dollars"
+    .replace(/%/g, 'percent') // Convert % to "percent"
     .replace(/\s+/g, ' ') // Clean up extra spaces
     .trim();
+}
+
+// Clean text and add SSML pauses for natural speech
+function prepareTextForTTS(text: string): string {
+  // Step 1: Expand abbreviations
+  let cleaned = expandAbbreviations(text);
   
-  // Add SSML pauses after punctuation for natural speech flow
+  // Step 2: Improve number pronunciation
+  cleaned = improveNumbers(cleaned);
+  
+  // Step 3: Clean special characters
+  cleaned = cleanSpecialCharacters(cleaned);
+  
+  // Step 4: Add SSML pauses after punctuation for natural speech flow
   cleaned = cleaned
     .replace(/\./g, '.<break time="500ms"/>') // 500ms pause after periods
     .replace(/,/g, ',<break time="300ms"/>') // 300ms pause after commas
