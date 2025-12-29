@@ -18,9 +18,9 @@ function removeEmojis(text: string): string {
 
 // Clean text and add SSML pauses for natural speech
 function prepareTextForTTS(text: string): string {
-  // Remove quotes and brackets, keep punctuation for natural pauses
+  // Remove double quotes and backticks, but keep apostrophes in contractions
   let cleaned = text
-    .replace(/["'`]/g, '') // Remove quotes
+    .replace(/["`]/g, '') // Remove double quotes and backticks only (keep apostrophes for contractions)
     .replace(/[()[\]{}]/g, ' ') // Remove brackets
     .replace(/…/g, '...') // Convert ellipsis to periods
     .replace(/\s+/g, ' ') // Clean up extra spaces
