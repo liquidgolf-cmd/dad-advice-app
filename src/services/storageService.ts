@@ -1,22 +1,5 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { ConversationSession, Message } from '../types';
-
-interface DadAdviceDB {
-  sessions: {
-    key: string;
-    value: ConversationSession;
-    indexes: { 'by-topic': string };
-  };
-  media: {
-    key: string;
-    value: {
-      id: string;
-      data: string;
-      type: 'image' | 'video';
-      timestamp: number;
-    };
-  };
-}
+import type { ConversationSession } from '../types';
 
 const DB_NAME = 'dad-advice-db';
 const DB_VERSION = 1;

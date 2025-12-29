@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Topic } from './types';
 import TopicSelector from './components/TopicSelector';
 import WorkshopEnvironment from './components/WorkshopEnvironment';
