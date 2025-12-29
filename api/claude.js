@@ -25,12 +25,10 @@ export default async function handler(req, res) {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    // Choose a broadly available model. Allow override via env.
-    // Priority: ANTHROPIC_MODEL env -> claude-3-5-sonnet-20241022 -> claude-3-haiku-20240307
-    const modelName =
-      process.env.ANTHROPIC_MODEL ||
-      'claude-3-5-sonnet-20241022' ||
-      'claude-3-haiku-20240307';
+    // Choose model - Haiku is most widely available
+    // Set ANTHROPIC_MODEL env var in Vercel to use a different model your account has access to
+    // Common models: claude-3-haiku-20240307, claude-3-5-sonnet-20241022, claude-3-opus-20240229
+    const modelName = process.env.ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
 
     // Build content array
     const content = [];
