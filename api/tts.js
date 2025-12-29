@@ -1,5 +1,3 @@
-const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -16,31 +14,42 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const client = new TextToSpeechClient({
-      apiKey: process.env.GOOGLE_CLOUD_TTS_API_KEY,
+    // Use Google Cloud TTS REST API
+    const apiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.GOOGLE_CLOUD_TTS_API_KEY}`;
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: { text },
+        voice: {
+          languageCode: 'en-US',
+          name: 'en-US-Neural2-D',
+          ssmlGender: 'MALE',
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          pitch: 0,
+          speakingRate: 1.0,
+        },
+      }),
     });
 
-    const [response] = await client.synthesizeSpeech({
-      input: { text },
-      voice: {
-        languageCode: 'en-US',
-        name: 'en-US-Neural2-D', // Warm male voice
-        ssmlGender: 'MALE',
-      },
-      audioConfig: {
-        audioEncoding: 'MP3',
-        pitch: 0,
-        speakingRate: 1.0,
-      },
-    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Google TTS API error: ${response.status} ${errorText}`);
+    }
 
-    if (!response.audioContent) {
+    const data = await response.json();
+
+    if (!data.audioContent) {
       throw new Error('No audio content received');
     }
 
-    // Convert to base64
-    const audioBase64 = Buffer.from(response.audioContent).toString('base64');
-    const audioUrl = `data:audio/mp3;base64,${audioBase64}`;
+    // audioContent is already base64 from the API
+    const audioUrl = `data:audio/mp3;base64,${data.audioContent}`;
 
     res.status(200).json({ audioUrl });
   } catch (error) {
