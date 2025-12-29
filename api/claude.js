@@ -1,6 +1,6 @@
-const Anthropic = require('@anthropic-ai/sdk');
+import Anthropic from '@anthropic-ai/sdk';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -105,5 +105,5 @@ module.exports = async function handler(req, res) {
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
-};
+}
 
