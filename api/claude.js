@@ -25,6 +25,10 @@ export default async function handler(req, res) {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
+    // Use a model that is broadly available; allow override via env
+    const modelName =
+      process.env.ANTHROPIC_MODEL || 'claude-3-opus-20240229';
+
     // Build content array
     const content = [];
     
@@ -65,7 +69,7 @@ export default async function handler(req, res) {
     });
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: modelName,
       max_tokens: 1024,
       system: systemPrompt,
       messages: conversationMessages,
@@ -111,6 +115,14 @@ export default async function handler(req, res) {
     console.error('Error name:', error.name);
     console.error('Error status:', error.status);
     console.error('Error statusCode:', error.statusCode);
+    if (error?.response) {
+      try {
+        const body = await error.response.text();
+        console.error('Error response body:', body);
+      } catch (e) {
+        console.error('Could not read error response body');
+      }
+    }
     
     // Anthropic SDK errors have different structure
     let errorDetails = error.message || 'Unknown error';
@@ -124,7 +136,7 @@ export default async function handler(req, res) {
     
     // If it's a 404, the model might be wrong
     if (statusCode === 404) {
-      errorDetails = 'Model not found. Please check the model name.';
+      errorDetails = 'Model not found. Trying a simpler model name may help.';
     }
     
     res.status(statusCode < 500 ? statusCode : 500).json({ 
