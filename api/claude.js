@@ -5,10 +5,19 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages, topic, imageData } = req.body;
+  const { messages, topic, imageData, systemPrompt } = req.body;
 
   if (!process.env.ANTHROPIC_API_KEY) {
+    console.error('ANTHROPIC_API_KEY not configured');
     return res.status(500).json({ error: 'API key not configured' });
+  }
+
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'Messages array is required' });
+  }
+
+  if (!systemPrompt) {
+    return res.status(400).json({ error: 'System prompt is required' });
   }
 
   try {
@@ -58,7 +67,7 @@ export default async function handler(req, res) {
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
-      system: req.body.systemPrompt,
+      system: systemPrompt,
       messages: conversationMessages,
     });
 
