@@ -1,3 +1,5 @@
+import https from 'https';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -23,13 +25,30 @@ export default async function handler(req, res) {
     searchUrl.searchParams.append('order', 'relevance');
     searchUrl.searchParams.append('key', process.env.YOUTUBE_API_KEY);
 
-    const response = await fetch(searchUrl.toString());
-    
-    if (!response.ok) {
-      throw new Error(`YouTube API error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await new Promise((resolve, reject) => {
+      https.get(searchUrl.toString(), (response) => {
+        let responseData = '';
+        
+        response.on('data', (chunk) => {
+          responseData += chunk;
+        });
+        
+        response.on('end', () => {
+          if (response.statusCode !== 200) {
+            reject(new Error(`YouTube API error: ${response.statusCode} ${responseData}`));
+            return;
+          }
+          
+          try {
+            resolve(JSON.parse(responseData));
+          } catch (e) {
+            reject(new Error(`Failed to parse response: ${e.message}`));
+          }
+        });
+      }).on('error', (error) => {
+        reject(error);
+      });
+    });
     
     const videos = data.items?.map((item) => ({
       id: item.id.videoId,

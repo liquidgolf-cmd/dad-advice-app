@@ -71,7 +71,7 @@ export default async function handler(req, res) {
 
     const response = await anthropic.messages.create({
       model: modelName,
-      max_tokens: 1024,
+      max_tokens: 300, // Keep responses short and conversational
       system: systemPrompt,
       messages: conversationMessages,
     });
