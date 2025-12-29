@@ -11,6 +11,7 @@ interface MainHubProps {
 const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession }) => {
   const [recentSessions, setRecentSessions] = useState<ConversationSession[]>([]);
   const [hoveredTopic, setHoveredTopic] = useState<Topic | null>(null);
+  const [showRecentMenu, setShowRecentMenu] = useState(false);
 
   useEffect(() => {
     loadRecentSessions();
@@ -59,43 +60,66 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
           </p>
         </div>
 
-        {/* Recent Conversations */}
+        {/* Recent Conversations Menu Button */}
         {recentSessions.length > 0 && (
-          <div className="mb-12 animate-slide-up">
-            <h2 className="text-2xl font-display font-bold text-dad-wood-dark mb-4">
-              Recent Conversations
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mb-8 flex justify-center">
+            <button
+              onClick={() => setShowRecentMenu(!showRecentMenu)}
+              className="
+                px-6 py-3
+                bg-white text-dad-wood-dark
+                rounded-full shadow-md
+                hover:shadow-lg hover:scale-105
+                transition-all duration-300
+                focus:outline-none focus:ring-4 focus:ring-dad-blue
+                flex items-center gap-2
+                font-medium
+              "
+            >
+              <span>📋</span>
+              <span>Recent Conversations ({recentSessions.length})</span>
+              <span className={`transition-transform duration-300 ${showRecentMenu ? 'rotate-180' : ''}`}>
+                ▼
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* Recent Conversations Dropdown Menu */}
+        {showRecentMenu && recentSessions.length > 0 && (
+          <div className="mb-8 max-w-2xl mx-auto animate-slide-up">
+            <div className="bg-white rounded-2xl shadow-xl p-6 space-y-3">
               {recentSessions.map((session) => {
                 const topicConfig = TOPICS.find(t => t.id === session.topic);
                 return (
                   <button
                     key={session.startTime}
-                    onClick={() => onSelectRecentSession?.(session)}
+                    onClick={() => {
+                      onSelectRecentSession?.(session);
+                      setShowRecentMenu(false);
+                    }}
                     className="
-                      bg-white rounded-2xl shadow-md
-                      p-6 text-left
-                      hover:shadow-xl hover:scale-105
-                      transition-all duration-300
-                      focus:outline-none focus:ring-4 focus:ring-dad-blue
+                      w-full
+                      bg-gray-50 rounded-xl
+                      p-4 text-left
+                      hover:bg-dad-blue-light hover:shadow-md
+                      transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-dad-blue
+                      flex items-center gap-4
                     "
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="text-4xl">
-                        {topicConfig?.emoji || '💬'}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-display font-bold text-dad-wood-dark text-lg mb-1">
-                          {topicConfig?.title || getTopicTitle(session.topic)}
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-2">
-                          {session.messages.length} messages
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {formatTimeAgo(session.lastActivity)}
-                        </p>
-                      </div>
+                    <div className="text-3xl">
+                      {topicConfig?.emoji || '💬'}
                     </div>
+                    <div className="flex-1">
+                      <h3 className="font-display font-bold text-dad-wood-dark text-base mb-1">
+                        {topicConfig?.title || getTopicTitle(session.topic)}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {session.messages.length} messages • {formatTimeAgo(session.lastActivity)}
+                      </p>
+                    </div>
+                    <span className="text-gray-400">→</span>
                   </button>
                 );
               })}
@@ -103,10 +127,10 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
           </div>
         )}
 
-        {/* Start New Conversation */}
+        {/* Topic Selection */}
         <div className="mb-8">
           <h2 className="text-2xl font-display font-bold text-dad-wood-dark mb-6 text-center">
-            {recentSessions.length > 0 ? 'Start New Conversation' : 'Choose a Topic'}
+            Choose a Topic
           </h2>
         </div>
 
