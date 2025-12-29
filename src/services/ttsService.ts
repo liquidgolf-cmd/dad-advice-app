@@ -16,21 +16,34 @@ function removeEmojis(text: string): string {
     .replace(/\s+/g, ' '); // Clean up extra spaces
 }
 
-// Clean punctuation - keep for natural pauses but remove quotes/brackets that sound weird
-function cleanPunctuationForTTS(text: string): string {
-  return text
-    .replace(/["'`]/g, '') // Remove quotes (they sound weird when read)
+// Clean text and add SSML pauses for natural speech
+function prepareTextForTTS(text: string): string {
+  // Remove quotes and brackets, keep punctuation for natural pauses
+  let cleaned = text
+    .replace(/["'`]/g, '') // Remove quotes
     .replace(/[()[\]{}]/g, ' ') // Remove brackets
     .replace(/…/g, '...') // Convert ellipsis to periods
     .replace(/\s+/g, ' ') // Clean up extra spaces
     .trim();
+  
+  // Add SSML pauses after punctuation for natural speech flow
+  cleaned = cleaned
+    .replace(/\./g, '.<break time="500ms"/>') // 500ms pause after periods
+    .replace(/,/g, ',<break time="300ms"/>') // 300ms pause after commas
+    .replace(/!/g, '!<break time="500ms"/>') // 500ms pause after exclamations
+    .replace(/\?/g, '?<break time="500ms"/>') // 500ms pause after questions
+    .replace(/;/g, ';<break time="400ms"/>') // 400ms pause after semicolons
+    .replace(/:/g, ':<break time="300ms"/>'); // 300ms pause after colons
+  
+  // Wrap in SSML speak tag
+  return `<speak>${cleaned}</speak>`;
 }
 
 export async function textToSpeech(text: string): Promise<string> {
   try {
-    // Remove emojis and clean punctuation (keep periods/commas for natural pauses)
+    // Remove emojis and prepare text with SSML pauses
     let cleanText = removeEmojis(text);
-    cleanText = cleanPunctuationForTTS(cleanText);
+    cleanText = prepareTextForTTS(cleanText);
     
     const response = await fetch('/api/tts', {
       method: 'POST',

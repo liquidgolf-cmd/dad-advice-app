@@ -18,22 +18,26 @@ export default async function handler(req, res) {
     // Use Google Cloud TTS REST API
     const apiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.GOOGLE_CLOUD_TTS_API_KEY}`;
     
+    // Check if text is SSML (starts with <speak>)
+    const isSSML = text.trim().startsWith('<speak>');
+    const input = isSSML ? { ssml: text } : { text };
+    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        input: { text },
+        input,
         voice: {
           languageCode: 'en-US',
-          name: 'en-US-Studio-M', // Studio voices are newest, most natural for conversations
+          name: 'en-US-Neural2-D', // Reliable, natural male voice
           ssmlGender: 'MALE',
         },
         audioConfig: {
           audioEncoding: 'MP3',
-          pitch: 0, // Natural pitch
-          speakingRate: 1.0, // Natural speaking rate
+          pitch: 0.2, // Slightly warmer
+          speakingRate: 0.95, // Slightly slower for clarity
         },
       }),
     });
