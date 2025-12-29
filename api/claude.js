@@ -84,12 +84,14 @@ export default async function handler(req, res) {
     const videoMatch = messageText.match(/VIDEO_HELPFUL:\s*(.+?)(?:\n|$)/i);
     const moodMatch = messageText.match(/MOOD:\s*(\w+)/i);
 
-    // Clean message text
+    // Clean message text - remove all marker strings anywhere in the text
     const cleanedMessage = messageText
-      .replace(/^(DIY_OK|PRO_RECOMMENDED)\s*/i, '')
-      .replace(/VIDEO_HELPFUL:.*?(\n|$)/gi, '')
-      .replace(/MOOD:.*?(\n|$)/gi, '')
-      .trim();
+      .replace(/\bDIY_OK\b\s*[?:.]?\s*/gi, '')
+      .replace(/\bPRO_RECOMMENDED\b\s*[?:.]?\s*/gi, '')
+      .replace(/VIDEO_HELPFUL:\s*[^\n]*/gi, '')
+      .replace(/MOOD:\s*[^\n]*/gi, '')
+      .trim()
+      .replace(/\s+/g, ' '); // Clean up extra spaces
 
     // Extract professional type
     let professionalType;
