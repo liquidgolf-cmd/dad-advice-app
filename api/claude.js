@@ -93,6 +93,15 @@ export default async function handler(req, res) {
       .trim()
       .replace(/\s+/g, ' '); // Clean up extra spaces
 
+    // Remove action markers (like *pats your shoulders*) from audio text
+    // Keep them in the displayed message but remove from TTS
+    const audioText = cleanedMessage
+      .replace(/\*[^*]+\*/g, '') // Remove *action* markers
+      .replace(/\_[^_]+\_/g, '') // Remove _action_ markers
+      .replace(/\[[^\]]+\]/g, '') // Remove [action] markers
+      .replace(/\s+/g, ' ') // Clean up extra spaces
+      .trim();
+
     // Extract professional type
     let professionalType;
     if (needsProfessional) {
@@ -105,7 +114,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({
       message: cleanedMessage,
-      audioText: cleanedMessage,
+      audioText: audioText,
       needsProfessional,
       professionalType,
       safetyLevel: needsProfessional ? 'professional_required' : 'safe_diy',
