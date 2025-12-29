@@ -60,9 +60,11 @@ export default async function handler(req, res) {
     res.status(200).json({ videos });
   } catch (error) {
     console.error('YouTube API error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to search videos',
-      details: error.message,
+      details: error.message || 'Unknown error',
     });
   }
 }
