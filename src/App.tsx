@@ -5,8 +5,10 @@ import AvatarSelectionScreen from './components/AvatarSelectionScreen';
 import MainHub from './components/MainHub';
 import AppHeader from './components/AppHeader';
 import WorkshopEnvironment from './components/WorkshopEnvironment';
+import DailyTipModal from './components/DailyTipModal';
 import { storageService } from './services/storageService';
 import { DEFAULT_AVATAR, getAvatarEmoji } from './utils/avatarOptions';
+import { DailyTipService, type DailyTip } from './utils/dailyTips';
 
 type AppView = 'splash' | 'avatar-selection' | 'hub' | 'workshop';
 
@@ -14,6 +16,7 @@ function App() {
   const [currentView, setCurrentView] = useState<AppView>('splash');
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>(DEFAULT_AVATAR.id);
+  const [currentTip, setCurrentTip] = useState<DailyTip | null>(null);
 
   useEffect(() => {
     // Check if splash has been shown before
@@ -27,6 +30,14 @@ function App() {
     if (hasSeenSplash && savedAvatar) {
       // Skip splash and avatar selection if both have been completed
       setCurrentView('hub');
+      
+      // Check if we should show a daily tip (after splash/avatar selection)
+      setTimeout(() => {
+        if (DailyTipService.shouldShowTip()) {
+          const tip = DailyTipService.getRandomTip();
+          setCurrentTip(tip);
+        }
+      }, 1500); // Small delay so user sees hub first
     } else if (hasSeenSplash && !savedAvatar) {
       // Skip splash but show avatar selection
       setCurrentView('avatar-selection');
@@ -69,6 +80,12 @@ function App() {
     setCurrentView('hub');
   };
 
+  const handleTipAction = (topic: Topic) => {
+    // User clicked action button in tip - go to that topic
+    setSelectedTopic(topic);
+    setCurrentView('workshop');
+  };
+
   return (
     <div className="App">
       {currentView === 'splash' && (
@@ -108,6 +125,15 @@ function App() {
             avatarEmoji={getAvatarEmoji(selectedAvatarId)}
           />
         </>
+      )}
+
+      {/* Daily Tip Modal - shown after 24h */}
+      {currentTip && (
+        <DailyTipModal
+          tip={currentTip}
+          onClose={() => setCurrentTip(null)}
+          onTakeAction={handleTipAction}
+        />
       )}
     </div>
   );
