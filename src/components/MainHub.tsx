@@ -3,7 +3,6 @@ import type { Topic, ConversationSession } from '../types';
 import { TOPICS } from '../utils/constants';
 import { storageService } from '../services/storageService';
 import { JokeService, type DadJoke } from '../utils/dadJokes';
-import JokeButton from './JokeButton';
 import DadJokeModal from './DadJokeModal';
 
 interface MainHubProps {
@@ -61,43 +60,36 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dad-warm-light via-dad-blue-light to-dad-green-light">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-dad-wood-dark mb-4">
-            Welcome Back! 👋
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-dad-warm-light/30">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Welcome Section - Minimal */}
+        <div className="text-center mb-6 animate-fade-in">
+          <h1 className="text-xl md:text-2xl font-display font-semibold text-dad-wood-dark">
+            What can I help you with?
           </h1>
-          <p className="text-xl md:text-2xl text-dad-wood mb-2">
-            I'm Dad, and I'm here to help!
-          </p>
-          <p className="text-lg text-gray-600">
-            What do you need help with today?
-          </p>
         </div>
 
         {/* Recent Conversations Menu Button */}
         {recentSessions.length > 0 && (
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <button
               onClick={() => setShowRecentMenu(!showRecentMenu)}
               className="
-                px-6 py-3
+                px-5 py-2.5
                 min-h-[44px]
-                bg-white text-dad-wood-dark
-                rounded-full shadow-md
-                hover:shadow-lg hover:scale-105
+                bg-white text-gray-700
+                rounded-lg shadow-sm
+                hover:shadow-md hover:bg-gray-50
                 active:scale-[0.98]
-                transition-all duration-300
-                focus:outline-none focus:ring-4 focus:ring-dad-blue
+                transition-all duration-200
+                focus:outline-none focus:ring-2 focus:ring-dad-blue
                 flex items-center gap-2
-                font-medium
+                font-medium text-sm
                 touch-manipulation
               "
             >
-              <span>📋</span>
-              <span>Recent Conversations ({recentSessions.length})</span>
-              <span className={`transition-transform duration-300 ${showRecentMenu ? 'rotate-180' : ''}`}>
+              <span>Recent ({recentSessions.length})</span>
+              <span className={`transition-transform duration-200 text-xs ${showRecentMenu ? 'rotate-180' : ''}`}>
                 ▼
               </span>
             </button>
@@ -106,8 +98,8 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
 
         {/* Recent Conversations Dropdown Menu */}
         {showRecentMenu && recentSessions.length > 0 && (
-          <div className="mb-8 max-w-2xl mx-auto animate-slide-up">
-            <div className="bg-white rounded-2xl shadow-xl p-6 space-y-3">
+          <div className="mb-6 max-w-2xl mx-auto animate-slide-up">
+            <div className="bg-white rounded-xl shadow-lg p-4 space-y-2">
               {recentSessions.map((session) => {
                 const topicConfig = TOPICS.find(t => t.id === session.topic);
                 return (
@@ -119,29 +111,29 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
                     }}
                     className="
                       w-full
-                      min-h-[60px]
-                      bg-gray-50 rounded-xl
-                      p-4 text-left
-                      hover:bg-dad-blue-light hover:shadow-md
-                      active:bg-dad-blue-light active:scale-[0.98]
-                      transition-all duration-200
+                      min-h-[56px]
+                      bg-gray-50 rounded-lg
+                      p-3 text-left
+                      hover:bg-dad-blue-light/30 hover:shadow-sm
+                      active:bg-dad-blue-light/30 active:scale-[0.98]
+                      transition-all duration-150
                       focus:outline-none focus:ring-2 focus:ring-dad-blue
-                      flex items-center gap-4
+                      flex items-center gap-3
                       touch-manipulation
                     "
                   >
-                    <div className="text-3xl">
+                    <div className="text-2xl">
                       {topicConfig?.emoji || '💬'}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-display font-bold text-dad-wood-dark text-base mb-1">
+                      <h3 className="font-display font-semibold text-dad-wood-dark text-sm mb-0.5">
                         {topicConfig?.title || getTopicTitle(session.topic)}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-gray-500">
                         {session.messages.length} messages • {formatTimeAgo(session.lastActivity)}
                       </p>
                     </div>
-                    <span className="text-gray-400">→</span>
+                    <span className="text-gray-300 text-sm">→</span>
                   </button>
                 );
               })}
@@ -149,15 +141,8 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
           </div>
         )}
 
-        {/* Topic Selection */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-display font-bold text-dad-wood-dark mb-6 text-center">
-            Choose a Topic
-          </h2>
-        </div>
-
         {/* Topic Selector Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
           {TOPICS.map((topic) => (
             <button
               key={topic.id}
@@ -166,52 +151,44 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
               onMouseLeave={() => setHoveredTopic(null)}
               className={`
                 relative overflow-hidden
-                bg-white rounded-3xl shadow-lg
-                p-8 text-left
-                transition-all duration-300 ease-out
-                hover:shadow-2xl hover:scale-105
+                bg-white rounded-xl shadow-sm
+                p-5 text-left
+                transition-all duration-200 ease-out
+                hover:shadow-md hover:scale-[1.02]
                 active:scale-[0.98]
-                focus:outline-none focus:ring-4 focus:ring-dad-blue
+                focus:outline-none focus:ring-2 focus:ring-dad-blue
                 touch-manipulation
-                ${hoveredTopic === topic.id ? 'transform scale-105' : ''}
+                min-h-[120px]
+                ${hoveredTopic === topic.id ? 'transform scale-[1.02]' : ''}
               `}
             >
-              <div className="text-6xl mb-4 transition-transform duration-300 hover:scale-110">
+              <div className="text-3xl mb-3 transition-transform duration-200">
                 {topic.emoji}
               </div>
-              <h3 className="text-2xl font-display font-bold text-dad-wood-dark mb-2">
+              <h3 className="text-lg font-display font-semibold text-dad-wood-dark mb-1.5">
                 {topic.title}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600 leading-snug">
                 {topic.description}
               </p>
               
-              {/* Hover effect */}
+              {/* Subtle hover accent */}
               <div 
                 className={`
-                  absolute bottom-0 left-0 right-0 h-1
+                  absolute bottom-0 left-0 right-0 h-0.5
                   bg-gradient-to-r from-dad-blue to-dad-green
-                  transition-all duration-300
-                  ${hoveredTopic === topic.id ? 'h-2' : 'h-0'}
+                  transition-all duration-200
+                  ${hoveredTopic === topic.id ? 'opacity-100' : 'opacity-0'}
                 `}
               />
             </button>
           ))}
         </div>
 
-        {/* Dad Joke Button */}
-        <div className="mt-12 flex justify-center">
-          <JokeButton onClick={showRandomJoke} variant="inline" />
-        </div>
-
-        {/* Footer tip */}
-        <div className="mt-12 text-center text-sm text-gray-500 max-w-2xl mx-auto animate-fade-in">
-          <p className="mb-2">
-            💡 <strong>Pro tip:</strong> I'm here to help with common problems and tough decisions, 
-            but I'll always let you know when something needs a professional.
-          </p>
+        {/* Minimal Safety Note */}
+        <div className="mt-8 text-center text-xs text-gray-400 max-w-xl mx-auto">
           <p>
-            Your safety and wellbeing come first! 🛡️
+            I'll always let you know when something needs a professional. Your safety comes first.
           </p>
         </div>
       </div>
