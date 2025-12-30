@@ -4,9 +4,10 @@ import type { DadMood } from '../types';
 interface DadAvatarProps {
   mood: DadMood;
   position: 'left' | 'right';
+  avatarEmoji?: string; // Custom avatar emoji
 }
 
-const DadAvatar: React.FC<DadAvatarProps> = ({ mood, position }) => {
+const DadAvatar: React.FC<DadAvatarProps> = ({ mood, position, avatarEmoji = '👨🏽' }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Trigger entrance animation when mood changes
@@ -27,7 +28,8 @@ const DadAvatar: React.FC<DadAvatarProps> = ({ mood, position }) => {
       case 'silly': return '🤪';
       case 'surprised': return '😲';
       case 'encouraging': return '💪';
-      default: return '👨';
+      case 'idle':
+      default: return avatarEmoji; // Use custom avatar for idle state
     }
   };
 

@@ -20,9 +20,10 @@ import LoadingSkeleton from './LoadingSkeleton';
 interface WorkshopEnvironmentProps {
   topic: Topic;
   onChangeTopic: () => void;
+  avatarEmoji?: string;
 }
 
-const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChangeTopic }) => {
+const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChangeTopic, avatarEmoji = '👨🏽' }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -293,7 +294,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
             <div key={message.id}>
               {message.role === 'dad' ? (
                 <div className="flex flex-col items-start">
-                  <DadAvatar mood={dadMood} position={topicConfig.dadPosition} />
+                  <DadAvatar mood={dadMood} position={topicConfig.dadPosition} avatarEmoji={avatarEmoji} />
                   <SpeechBubble
                     message={message.content}
                     audioUrl={message.audioUrl}
@@ -328,7 +329,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
 
           {isLoading && (
             <div className="flex flex-col items-start">
-              <DadAvatar mood={dadMood} position={topicConfig.dadPosition} />
+              <DadAvatar mood={dadMood} position={topicConfig.dadPosition} avatarEmoji={avatarEmoji} />
               <LoadingSkeleton type="bubble" />
             </div>
           )}

@@ -101,6 +101,19 @@ export const storageService = {
     await db.clear('sessions');
     await db.clear('media');
   },
+
+  // Avatar preferences (using localStorage for simplicity)
+  getSelectedAvatar(): string | null {
+    return localStorage.getItem('dad-advice-selected-avatar');
+  },
+
+  setSelectedAvatar(avatarId: string): void {
+    localStorage.setItem('dad-advice-selected-avatar', avatarId);
+  },
+
+  hasSelectedAvatar(): boolean {
+    return localStorage.getItem('dad-advice-selected-avatar') !== null;
+  },
 };
 
 // Auto-cleanup on load
