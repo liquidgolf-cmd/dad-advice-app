@@ -262,7 +262,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
         aria-label={`${topicConfig.title} background`}
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-dad-warm-light/80 to-dad-warm/80 flex flex-col relative">
+      <div className="min-h-screen bg-gradient-to-br from-dad-warm-light/20 to-dad-warm/30 flex flex-col relative">
         {/* Header */}
       <div className="bg-dad-wood text-white px-4 py-4 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center justify-between">

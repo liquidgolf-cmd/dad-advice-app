@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background Test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    
+    .environment-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(4px) brightness(1.15);
+      opacity: 0.35;
+      transition: opacity 0.6s ease-in-out;
+    }
+    
+    .environment-background::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+      );
+    }
+    
+    .bg-workshop {
+      background-image: url('/images/backgrounds/workshop.jpg');
+    }
+    
+    .bg-garage {
+      background-image: url('/images/backgrounds/garage.jpg');
+    }
+    
+    .bg-study {
+      background-image: url('/images/backgrounds/study.jpg');
+    }
+    
+    .bg-living-room {
+      background-image: url('/images/backgrounds/living-room.jpg');
+    }
+    
+    .bg-patio {
+      background-image: url('/images/backgrounds/patio.jpg');
+    }
+    
+    .bg-office {
+      background-image: url('/images/backgrounds/office.jpg');
+    }
+    
+    .container {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom right, rgba(245, 230, 211, 0.8), rgba(232, 212, 184, 0.8));
+    }
+    
+    .content {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      text-align: center;
+    }
+    
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+    
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #6B9AC4;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #4A7BA7;
+      transform: scale(1.05);
+    }
+    
+    .current-bg {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #F5E6D3;
+      border-radius: 0.5rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="background" class="environment-background bg-workshop"></div>
+  
+  <div class="container">
+    <div class="content">
+      <h1>🎨 Background Test</h1>
+      <p>Click buttons to test each themed background</p>
+      
+      <div class="buttons">
+        <button onclick="changeBackground('workshop', '🔧 Workshop')">🔧 Workshop</button>
+        <button onclick="changeBackground('garage', '🚗 Garage')">🚗 Garage</button>
+        <button onclick="changeBackground('study', '💻 Study')">💻 Study</button>
+        <button onclick="changeBackground('living-room', '❤️ Living Room')">❤️ Living Room</button>
+        <button onclick="changeBackground('patio', '💼 Patio')">💼 Patio</button>
+        <button onclick="changeBackground('office', '🎯 Office')">🎯 Office</button>
+      </div>
+      
+      <div class="current-bg" id="current">
+        Current: 🔧 Workshop
+      </div>
+      
+      <p style="margin-top: 2rem; color: #666; font-size: 0.875rem;">
+        You should see a subtle, blurred background behind this box.<br>
+        If you don't see it, the images aren't loading.
+      </p>
+    </div>
+  </div>
+  
+  <script>
+    function changeBackground(bgClass, label) {
+      const bg = document.getElementById('background');
+      bg.className = 'environment-background bg-' + bgClass;
+      document.getElementById('current').textContent = 'Current: ' + label;
+    }
+    
+    // Log for debugging
+    console.log('Background element:', document.getElementById('background'));
+    console.log('Computed background image:', 
+      window.getComputedStyle(document.getElementById('background')).backgroundImage
+    );
+  </script>
+</body>
+</html>
+
