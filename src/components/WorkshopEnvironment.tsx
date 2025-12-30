@@ -158,7 +158,10 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       // Search for videos if suggested (optional, don't fail if this errors)
       if (response.videoSuggestion) {
         try {
-          const videos = await searchYouTubeVideos(response.videoSuggestion);
+          const videos = await searchYouTubeVideos(
+            response.videoSuggestion,
+            messageText
+          );
           setVideoSuggestions(videos);
         } catch (error) {
           console.error('Video search failed:', error);

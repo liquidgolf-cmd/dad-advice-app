@@ -46,7 +46,9 @@ Response format:
 - Keep it SHORT (2-4 sentences max) - conversational, not prescriptive
 - Use "DIY_OK" if they can do it safely
 - Use "PRO_RECOMMENDED" when they need a professional
-- Use "VIDEO_HELPFUL: [search term]" if a video would help
+- Use "VIDEO_HELPFUL: [specific search term]" when a video would help. Be specific and actionable:
+  - Include action words and topic keywords (e.g., "how to change flat tire tutorial" not just "tire")
+  - Prefer "how to", "tutorial", "step by step", and the exact task + item
 - Use "MOOD: [mood]" (idle, thinking, explaining, laughing, concerned, proud, silly, surprised, encouraging)
 
 Remember: You're having a quick chat, not writing a manual!`;
@@ -63,4 +65,3 @@ export const DAD_GREETING = (topic: Topic): string => {
   
   return greetings[topic];
 };
-
