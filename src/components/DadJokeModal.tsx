@@ -10,7 +10,9 @@ interface DadJokeModalProps {
 const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal = false }) => {
   const [showPunchline, setShowPunchline] = useState(autoReveal);
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (autoReveal) {
@@ -20,10 +22,13 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
   }, [autoReveal]);
 
   useEffect(() => {
-    // Cleanup auto-close timer on unmount
+    // Cleanup timers on unmount
     return () => {
       if (autoCloseTimerRef.current) {
         clearTimeout(autoCloseTimerRef.current);
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
   }, []);
@@ -40,6 +45,22 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
       console.error('Failed to save reaction:', error);
     }
     
+    // Start countdown from 6 seconds
+    setCountdown(6);
+    
+    // Update countdown every second
+    countdownIntervalRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+          }
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
     // Auto-close after 6 seconds
     autoCloseTimerRef.current = setTimeout(() => {
       onClose();
@@ -47,10 +68,14 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
   };
 
   const handleClose = () => {
-    // Clear any pending auto-close timer
+    // Clear any pending timers
     if (autoCloseTimerRef.current) {
       clearTimeout(autoCloseTimerRef.current);
       autoCloseTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
     }
     onClose();
   };
@@ -168,6 +193,16 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
               </button>
             </div>
 
+            {/* Countdown Progress Bar */}
+            {countdown !== null && (
+              <div className="mb-3 overflow-hidden rounded-full bg-gray-200 h-2">
+                <div 
+                  className="h-full bg-dad-green transition-all duration-1000 ease-linear"
+                  style={{ width: `${((6 - countdown) / 6) * 100}%` }}
+                />
+              </div>
+            )}
+
             {/* Close button */}
             <button
               onClick={handleClose}
@@ -178,6 +213,7 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
                 rounded-xl
                 transition-all duration-300
                 focus:outline-none focus:ring-2 focus:ring-dad-blue
+                relative
                 ${selectedReaction 
                   ? 'bg-dad-green text-white hover:bg-green-600' 
                   : 'bg-dad-tan text-dad-text hover:bg-dad-tan-dark'
@@ -185,9 +221,24 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
               `}
             >
               {selectedReaction ? (
-                <span className="flex items-center justify-center gap-2 animate-pulse">
+                <span className="flex items-center justify-center gap-3">
                   <span>✨</span>
-                  <span>Got it! (Closing...)</span>
+                  <span>Got it!</span>
+                  {countdown !== null && (
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm opacity-80">Closing in</span>
+                      <span className="
+                        inline-flex items-center justify-center
+                        w-8 h-8 
+                        bg-white bg-opacity-30 
+                        rounded-full 
+                        font-bold text-lg
+                        animate-pulse
+                      ">
+                        {countdown}
+                      </span>
+                    </span>
+                  )}
                 </span>
               ) : (
                 'Thanks, Dad! 😄'
