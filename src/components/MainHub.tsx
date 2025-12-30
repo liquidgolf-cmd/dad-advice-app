@@ -162,7 +162,7 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
                 ${hoveredTopic === topic.id ? 'transform scale-[1.02]' : ''}
               `}
             >
-              <div className="text-3xl mb-3 transition-all duration-500 hover:drop-shadow-[0_0_20px_rgba(107,154,196,0.7)] hover:scale-110">
+              <div className="text-3xl mb-3 transition-transform duration-300 ease-out hover:-translate-y-2">
                 {topic.emoji}
               </div>
               <h3 className="text-lg font-display font-semibold text-dad-wood-dark mb-1.5">
