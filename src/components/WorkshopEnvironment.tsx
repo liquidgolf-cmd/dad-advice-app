@@ -241,7 +241,14 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dad-warm-light to-dad-warm flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-dad-warm-light to-dad-warm flex flex-col relative">
+      {/* Themed Background Image */}
+      <div 
+        className={`environment-background bg-${topicConfig.environment}`}
+        role="img"
+        aria-label={`${topicConfig.title} background`}
+      />
+      
       {/* Header */}
       <div className="bg-dad-wood text-white px-4 py-4 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
