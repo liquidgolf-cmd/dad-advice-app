@@ -40,10 +40,10 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
       console.error('Failed to save reaction:', error);
     }
     
-    // Auto-close after 1.5 seconds
+    // Auto-close after 3 seconds
     autoCloseTimerRef.current = setTimeout(() => {
       onClose();
-    }, 1500);
+    }, 3000);
   };
 
   const handleClose = () => {
