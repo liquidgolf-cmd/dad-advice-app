@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { DadJoke } from '../utils/dadJokes';
 
 interface DadJokeModalProps {
@@ -10,6 +10,7 @@ interface DadJokeModalProps {
 const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal = false }) => {
   const [showPunchline, setShowPunchline] = useState(autoReveal);
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
+  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (autoReveal) {
@@ -17,6 +18,15 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
       return () => clearTimeout(timer);
     }
   }, [autoReveal]);
+
+  useEffect(() => {
+    // Cleanup auto-close timer on unmount
+    return () => {
+      if (autoCloseTimerRef.current) {
+        clearTimeout(autoCloseTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleReaction = (reactionType: string) => {
     setSelectedReaction(reactionType);
@@ -29,6 +39,20 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
     } catch (error) {
       console.error('Failed to save reaction:', error);
     }
+    
+    // Auto-close after 1.5 seconds
+    autoCloseTimerRef.current = setTimeout(() => {
+      onClose();
+    }, 1500);
+  };
+
+  const handleClose = () => {
+    // Clear any pending auto-close timer
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+    onClose();
   };
 
   const handleReveal = () => {
@@ -47,7 +71,7 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
             </h2>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="
               w-10 h-10 rounded-full
               bg-gray-200 text-gray-600
@@ -146,19 +170,28 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
 
             {/* Close button */}
             <button
-              onClick={onClose}
-              className="
+              onClick={handleClose}
+              className={`
                 w-full
                 px-6 py-3
-                bg-dad-tan text-dad-text
                 font-medium
                 rounded-xl
-                hover:bg-dad-tan-dark
-                transition-colors
+                transition-all duration-300
                 focus:outline-none focus:ring-2 focus:ring-dad-blue
-              "
+                ${selectedReaction 
+                  ? 'bg-dad-green text-white hover:bg-green-600' 
+                  : 'bg-dad-tan text-dad-text hover:bg-dad-tan-dark'
+                }
+              `}
             >
-              Thanks, Dad! 😄
+              {selectedReaction ? (
+                <span className="flex items-center justify-center gap-2 animate-pulse">
+                  <span>✨</span>
+                  <span>Got it! (Closing...)</span>
+                </span>
+              ) : (
+                'Thanks, Dad! 😄'
+              )}
             </button>
           </div>
         )}
