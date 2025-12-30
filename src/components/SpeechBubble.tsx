@@ -76,12 +76,18 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
     }
   }, [audioUrl, autoPlay, hasPlayed]);
 
-  const playAudio = () => {
+  const playAudio = async () => {
     if (!audioRef.current || !audioUrl) return;
 
-    audioRef.current.play();
-    setIsPlaying(true);
-    onAudioPlay?.();
+    try {
+      await audioRef.current.play();
+      setIsPlaying(true);
+      onAudioPlay?.();
+    } catch (error) {
+      console.error('Audio playback failed:', error);
+      setIsPlaying(false);
+      // Audio playback failed - this is OK, just don't play
+    }
   };
 
   const pauseAudio = () => {
@@ -162,6 +168,10 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
           ref={audioRef}
           src={audioUrl}
           onEnded={handleAudioEnd}
+          onError={(e) => {
+            console.error('Audio element error:', e);
+            setIsPlaying(false);
+          }}
           preload="auto"
         />
       )}
