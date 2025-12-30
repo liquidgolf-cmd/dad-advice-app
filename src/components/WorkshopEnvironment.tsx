@@ -289,7 +289,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
         {...swipeHandlers}
       >
         <div className="max-w-4xl mx-auto space-y-6">
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <div key={message.id}>
               {message.role === 'dad' ? (
                 <div className="flex flex-col items-start">
@@ -297,7 +297,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
                   <SpeechBubble
                     message={message.content}
                     audioUrl={message.audioUrl}
-                    autoPlay={true}
+                    autoPlay={index === messages.length - 1 && message.role === 'dad'}
                     onAudioPlay={() => setDadMood('explaining')}
                     onAudioEnd={() => setDadMood('idle')}
                   />
