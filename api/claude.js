@@ -90,17 +90,16 @@ export default async function handler(req, res) {
       .replace(/\bPRO_RECOMMENDED\b\s*[?:.]?\s*/gi, '')
       .replace(/VIDEO_HELPFUL:\s*[^\n]*/gi, '')
       .replace(/MOOD:\s*[^\n]*/gi, '')
-      .replace(/\(\)/g, '') // Remove empty parentheses
-      .replace(/\([^)]*\)/g, (match) => {
-        // Remove parentheses that only contain whitespace or are effectively empty
-        const content = match.slice(1, -1).trim();
-        return content ? match : '';
-      })
+      .replace(/\(\s*\)/g, '') // Remove empty parentheses with or without spaces
+      .replace(/\s*\(\s*/g, ' (') // Normalize spacing before opening paren
+      .replace(/\s*\)\s*/g, ') ') // Normalize spacing after closing paren
+      .replace(/\s+\)/g, ')') // Remove space before closing paren
+      .replace(/\(\s+/g, '(') // Remove space after opening paren
+      .replace(/\(\)/g, '') // Remove any remaining empty parentheses
+      .replace(/(?<!\w)\((?!\w)/g, '') // Remove stray opening parenthesis
+      .replace(/(?<!\w)\)(?!\w)/g, '') // Remove stray closing parenthesis
       .trim()
-      .replace(/\s+/g, ' ') // Clean up extra spaces
-      .replace(/\s+\(/g, ' (') // Fix spacing before remaining parentheses
-      .replace(/\(\s+/g, '(') // Fix spacing inside parentheses
-      .replace(/\s+\)/g, ')'); // Fix spacing before closing parentheses
+      .replace(/\s+/g, ' '); // Clean up extra spaces
 
     // Remove action markers (like *pats your shoulders*) from audio text
     // Keep them in the displayed message but remove from TTS
