@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import type { Topic, ConversationSession } from '../types';
 import { TOPICS } from '../utils/constants';
 import { storageService } from '../services/storageService';
+import { JokeService, type DadJoke } from '../utils/dadJokes';
+import JokeButton from './JokeButton';
+import DadJokeModal from './DadJokeModal';
 
 interface MainHubProps {
   onSelectTopic: (topic: Topic) => void;
@@ -12,10 +15,23 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
   const [recentSessions, setRecentSessions] = useState<ConversationSession[]>([]);
   const [hoveredTopic, setHoveredTopic] = useState<Topic | null>(null);
   const [showRecentMenu, setShowRecentMenu] = useState(false);
+  const [currentJoke, setCurrentJoke] = useState<DadJoke | null>(null);
 
   useEffect(() => {
     loadRecentSessions();
+    
+    // Show a random joke occasionally (20% chance) when hub loads
+    if (Math.random() < 0.2) {
+      setTimeout(() => {
+        showRandomJoke();
+      }, 1500);
+    }
   }, []);
+
+  const showRandomJoke = () => {
+    const joke = JokeService.getRandomJoke();
+    setCurrentJoke(joke);
+  };
 
   const loadRecentSessions = async () => {
     try {
@@ -183,6 +199,11 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
           ))}
         </div>
 
+        {/* Dad Joke Button */}
+        <div className="mt-12 flex justify-center">
+          <JokeButton onClick={showRandomJoke} variant="inline" />
+        </div>
+
         {/* Footer tip */}
         <div className="mt-12 text-center text-sm text-gray-500 max-w-2xl mx-auto animate-fade-in">
           <p className="mb-2">
@@ -194,6 +215,15 @@ const MainHub: React.FC<MainHubProps> = ({ onSelectTopic, onSelectRecentSession 
           </p>
         </div>
       </div>
+
+      {/* Dad Joke Modal */}
+      {currentJoke && (
+        <DadJokeModal 
+          joke={currentJoke}
+          onClose={() => setCurrentJoke(null)}
+          autoReveal={false}
+        />
+      )}
     </div>
   );
 };

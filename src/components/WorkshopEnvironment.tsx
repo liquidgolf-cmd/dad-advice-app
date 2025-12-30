@@ -9,6 +9,7 @@ import { storageService } from '../services/storageService';
 import { handleAPIError, isRetryableError } from '../utils/errorHandler';
 import { retry } from '../utils/retry';
 import { useSwipeGesture } from '../utils/swipeGestures';
+import { JokeService, type DadJoke } from '../utils/dadJokes';
 import DadAvatar from './DadAvatar';
 import SpeechBubble from './SpeechBubble';
 import MediaCapture from './MediaCapture';
@@ -16,6 +17,7 @@ import VideoSuggestion from './VideoSuggestion';
 import ProfessionalReferral from './ProfessionalReferral';
 import ErrorMessage from './ErrorMessage';
 import LoadingSkeleton from './LoadingSkeleton';
+import DadJokeModal from './DadJokeModal';
 
 interface WorkshopEnvironmentProps {
   topic: Topic;
@@ -32,6 +34,8 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
   const [videoSuggestions, setVideoSuggestions] = useState<YouTubeVideo[]>([]);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [error, setError] = useState<{ message: string; retryable: boolean } | null>(null);
+  const [currentJoke, setCurrentJoke] = useState<DadJoke | null>(null);
+  const [taskCompletedCount, setTaskCompletedCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -184,6 +188,18 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       };
 
       setMessages((prev) => [...prev, dadMessage]);
+      
+      // Show a dad joke after every 3 successful task completions
+      const newTaskCount = taskCompletedCount + 1;
+      setTaskCompletedCount(newTaskCount);
+      
+      if (newTaskCount % 3 === 0) {
+        // Show joke after a short delay
+        setTimeout(() => {
+          const joke = JokeService.getRandomJoke(topic);
+          setCurrentJoke(joke);
+        }, 2000);
+      }
     } catch (error) {
       console.error('Failed to get response:', error);
       
@@ -432,6 +448,15 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
           </div>
         </div>
       </div>
+
+      {/* Dad Joke Modal - shown after task completions */}
+      {currentJoke && (
+        <DadJokeModal 
+          joke={currentJoke}
+          onClose={() => setCurrentJoke(null)}
+          autoReveal={true}
+        />
+      )}
     </div>
   );
 };
