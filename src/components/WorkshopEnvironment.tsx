@@ -91,7 +91,9 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
       // Generate audio for greeting (optional - fails gracefully)
       try {
         const audioUrl = await getCachedAudio(greeting.content);
-        setMessages([{ ...greeting, audioUrl }]);
+        if (audioUrl) {
+          setMessages([{ ...greeting, audioUrl }]);
+        }
       } catch (error) {
         console.log('TTS not available (expected in local dev)');
         // Continue without audio - that's fine!
@@ -175,7 +177,7 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
         role: 'dad',
         content: response.message,
         timestamp: Date.now(),
-        audioUrl,
+        ...(audioUrl ? { audioUrl } : {}), // Only include audioUrl if it exists
         needsProfessional: response.needsProfessional,
         professionalType: response.professionalType,
       };

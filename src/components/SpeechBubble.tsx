@@ -69,15 +69,22 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   
   const messageParts = parseMessage(message);
 
+  // Validate audioUrl format (must be a valid data URL or http URL)
+  const isValidAudioUrl = audioUrl && (
+    audioUrl.startsWith('data:audio/') || 
+    audioUrl.startsWith('http://') || 
+    audioUrl.startsWith('https://')
+  );
+
   useEffect(() => {
-    if (audioUrl && autoPlay && !hasPlayed) {
+    if (isValidAudioUrl && autoPlay && !hasPlayed) {
       playAudio();
       setHasPlayed(true);
     }
-  }, [audioUrl, autoPlay, hasPlayed]);
+  }, [isValidAudioUrl, autoPlay, hasPlayed]);
 
   const playAudio = async () => {
-    if (!audioRef.current || !audioUrl) return;
+    if (!audioRef.current || !isValidAudioUrl) return;
 
     try {
       await audioRef.current.play();
@@ -120,7 +127,7 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
         })}
       </div>
 
-      {audioUrl && (
+      {isValidAudioUrl && (
         <div className="mt-4 flex items-center gap-3">
           <button
             onClick={isPlaying ? pauseAudio : playAudio}
@@ -163,7 +170,7 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
         </div>
       )}
 
-      {audioUrl && (
+      {isValidAudioUrl && (
         <audio
           ref={audioRef}
           src={audioUrl}
