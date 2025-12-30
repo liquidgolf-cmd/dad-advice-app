@@ -9,6 +9,7 @@ interface DadJokeModalProps {
 
 const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal = false }) => {
   const [showPunchline, setShowPunchline] = useState(autoReveal);
+  const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
 
   useEffect(() => {
     if (autoReveal) {
@@ -16,6 +17,19 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
       return () => clearTimeout(timer);
     }
   }, [autoReveal]);
+
+  const handleReaction = (reactionType: string) => {
+    setSelectedReaction(reactionType);
+    
+    // Store reaction in localStorage for future analytics
+    try {
+      const reactions = JSON.parse(localStorage.getItem('joke-reactions') || '{}');
+      reactions[joke.id] = reactionType;
+      localStorage.setItem('joke-reactions', JSON.stringify(reactions));
+    } catch (error) {
+      console.error('Failed to save reaction:', error);
+    }
+  };
 
   const handleReveal = () => {
     setShowPunchline(true);
@@ -89,29 +103,41 @@ const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal =
             {/* Reaction buttons */}
             <div className="flex gap-3 justify-center mb-4">
               <button 
-                className="text-4xl hover:scale-125 transition-transform"
-                onClick={() => {}}
+                className={`
+                  text-4xl hover:scale-125 transition-transform duration-200
+                  ${selectedReaction === 'funny' ? 'scale-150 drop-shadow-lg' : ''}
+                `}
+                onClick={() => handleReaction('funny')}
                 title="That's funny!"
               >
                 😂
               </button>
               <button 
-                className="text-4xl hover:scale-125 transition-transform"
-                onClick={() => {}}
+                className={`
+                  text-4xl hover:scale-125 transition-transform duration-200
+                  ${selectedReaction === 'good' ? 'scale-150 drop-shadow-lg' : ''}
+                `}
+                onClick={() => handleReaction('good')}
                 title="Good one, Dad!"
               >
                 👍
               </button>
               <button 
-                className="text-4xl hover:scale-125 transition-transform"
-                onClick={() => {}}
+                className={`
+                  text-4xl hover:scale-125 transition-transform duration-200
+                  ${selectedReaction === 'groan' ? 'scale-150 drop-shadow-lg' : ''}
+                `}
+                onClick={() => handleReaction('groan')}
                 title="Oh Dad..."
               >
                 🙄
               </button>
               <button 
-                className="text-4xl hover:scale-125 transition-transform"
-                onClick={() => {}}
+                className={`
+                  text-4xl hover:scale-125 transition-transform duration-200
+                  ${selectedReaction === 'terrible' ? 'scale-150 drop-shadow-lg' : ''}
+                `}
+                onClick={() => handleReaction('terrible')}
                 title="That's terrible!"
               >
                 🤦
