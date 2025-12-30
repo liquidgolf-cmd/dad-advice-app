@@ -10,7 +10,7 @@ interface DadJokeModalProps {
 const DadJokeModal: React.FC<DadJokeModalProps> = ({ joke, onClose, autoReveal = false }) => {
   const [showPunchline, setShowPunchline] = useState(autoReveal);
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
-  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (autoReveal) {
