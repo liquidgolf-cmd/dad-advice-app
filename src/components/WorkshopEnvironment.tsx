@@ -240,11 +240,24 @@ const WorkshopEnvironment: React.FC<WorkshopEnvironmentProps> = ({ topic, onChan
     }
   };
 
+  // Get background class name for current environment
+  const getBackgroundClass = () => {
+    const envMap: Record<string, string> = {
+      'workshop': 'bg-workshop',
+      'garage': 'bg-garage',
+      'study': 'bg-study',
+      'living-room': 'bg-living-room',
+      'patio': 'bg-patio',
+      'office': 'bg-office',
+    };
+    return envMap[topicConfig.environment] || 'bg-office';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-dad-warm-light to-dad-warm flex flex-col relative">
       {/* Themed Background Image */}
       <div 
-        className={`environment-background bg-${topicConfig.environment}`}
+        className={`environment-background ${getBackgroundClass()}`}
         role="img"
         aria-label={`${topicConfig.title} background`}
       />
