@@ -30,7 +30,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <button
             onClick={onHomeClick}
             className="
-              flex items-center gap-3
+              flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-3
               focus:outline-none focus:ring-2 focus:ring-dad-blue rounded-lg
               transition-opacity hover:opacity-80
             "
@@ -40,7 +40,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
               alt="Advice from Dad when dad isn't available Logo" 
               className="h-10 w-auto"
             />
-            <span className="text-lg md:text-xl font-display font-bold text-dad-wood-dark">
+            <span className="text-sm md:text-lg lg:text-xl font-display font-bold text-dad-wood-dark leading-tight">
               Advice from Dad when dad isn't available
             </span>
           </button>
