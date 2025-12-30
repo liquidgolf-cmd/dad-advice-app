@@ -109,7 +109,8 @@ function improveNumbers(text: string): string {
 function cleanSpecialCharacters(text: string): string {
   return text
     .replace(/["`]/g, '') // Remove double quotes and backticks (keep apostrophes for contractions)
-    .replace(/[()[\]{}]/g, ' ') // Remove brackets
+    .replace(/\([^)]*\)/g, '') // Remove parentheses and their content (for TTS)
+    .replace(/[()[\]{}]/g, '') // Remove any remaining brackets (shouldn't be any, but just in case)
     .replace(/…/g, '...') // Convert ellipsis to periods
     .replace(/–|—/g, '-') // Convert em/en dashes to hyphens
     .replace(/©|®|™/g, '') // Remove copyright symbols

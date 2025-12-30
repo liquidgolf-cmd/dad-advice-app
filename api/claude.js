@@ -90,8 +90,17 @@ export default async function handler(req, res) {
       .replace(/\bPRO_RECOMMENDED\b\s*[?:.]?\s*/gi, '')
       .replace(/VIDEO_HELPFUL:\s*[^\n]*/gi, '')
       .replace(/MOOD:\s*[^\n]*/gi, '')
+      .replace(/\(\)/g, '') // Remove empty parentheses
+      .replace(/\([^)]*\)/g, (match) => {
+        // Remove parentheses that only contain whitespace or are effectively empty
+        const content = match.slice(1, -1).trim();
+        return content ? match : '';
+      })
       .trim()
-      .replace(/\s+/g, ' '); // Clean up extra spaces
+      .replace(/\s+/g, ' ') // Clean up extra spaces
+      .replace(/\s+\(/g, ' (') // Fix spacing before remaining parentheses
+      .replace(/\(\s+/g, '(') // Fix spacing inside parentheses
+      .replace(/\s+\)/g, ')'); // Fix spacing before closing parentheses
 
     // Remove action markers (like *pats your shoulders*) from audio text
     // Keep them in the displayed message but remove from TTS
@@ -99,6 +108,7 @@ export default async function handler(req, res) {
       .replace(/\*[^*]+\*/g, '') // Remove *action* markers
       .replace(/\_[^_]+\_/g, '') // Remove _action_ markers
       .replace(/\[[^\]]+\]/g, '') // Remove [action] markers
+      .replace(/\([^)]*\)/g, '') // Remove all parentheses and their content for TTS
       .replace(/\s+/g, ' ') // Clean up extra spaces
       .trim();
 
