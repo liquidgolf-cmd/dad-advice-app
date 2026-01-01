@@ -6,7 +6,7 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 flex flex-col items-center justify-center p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-100 to-teal-50 flex flex-col items-center justify-center p-4 animate-fade-in">
       <div className="text-center max-w-2xl animate-slide-up">
         {/* App Logo/Title */}
         <div className="mb-8">
@@ -14,9 +14,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
             <img 
               src="/logo.png" 
               alt="Advice from Dad when dad isn't available Logo" 
-              className="h-32 md:h-40 w-auto mb-4 animate-fade-in drop-shadow-2xl"
+              className="h-32 md:h-40 w-auto mb-4 animate-fade-in drop-shadow-lg"
             />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-teal-300 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-teal-700 leading-tight">
               Advice from Dad when dad isn't available
             </h1>
           </div>
@@ -24,13 +24,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
 
         {/* Welcome Message */}
         <div className="mb-12 space-y-4">
-          <p className="text-2xl md:text-3xl font-display text-teal-200 mb-4">
+          <p className="text-2xl md:text-3xl font-display text-teal-800 mb-4">
             Hey there! 👋
           </p>
-          <p className="text-xl md:text-2xl text-slate-300 leading-relaxed">
+          <p className="text-xl md:text-2xl text-slate-700 leading-relaxed">
             I'm Dad, and I'm here to help with whatever you need.
           </p>
-          <p className="text-lg md:text-xl text-slate-400 leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
             Home repairs, car troubles, tech questions, life advice... 
             <br />
             Let's figure it out together.
